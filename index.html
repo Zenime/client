@@ -40,32 +40,56 @@
         <br>
 
         <div id="animeList">
-            <div class="mx-auto jumbotron pb-2 pt-2" style="width: 85%; ">
-                <img id="animeImage" class="rounded float-left img-thumbnail mx-3" style="width: 130px; height:185px" src="https://cdn.myanimelist.net/images/anime/1795/95088.jpg?s=e2e6133e60a7f5351826fc9f72bdddb8" >
-                <h2 class="display-3 " id="animeTitle" >Title</h2>
-                <p class="lead" id="animeGenre">
-                    <span class="badge badge-pill badge-primary">Genre</span>
-                </p>
-                <!-- <p>It uses utility classes for typography and spacing to space content out within the larger container.</p> -->
-                <p class="lead">
-                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-                            Learn More
-                    </button>
-                </p>
-    
-                <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" >
-                    <div class="card-body" id="detailAnime">
-                        detailnya
-                    </div>
-                </div>
-            </div>
+            
         </div>
 
     </div>
-
+    
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+    
+    <script>
+        $.ajax({
+            type: "GET",
+            url: `http://localhost:3000/anime`
+        })
+            .done( animes => {
+                animes.forEach( function(e){
+                    console.log(e)
+                    $('#animeList').append(`
+                    <div class="mx-auto jumbotron pb-2 pt-2" style="width: 85%;">
+                        <img id="animeImage" class="rounded float-left img-thumbnail mx-3" style="width: 90px; height:125px" src="${e.image_url}">
+                        <h4 class="" id="animeTitle">${e.title}</h4>
+                        <p class="lead" id="animeGenre${e.mal_id}">
+                            <span class="badge badge-pill badge-success">Genre</span>
+                        </p>
+                        <p class="lead">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${e.mal_id}" >
+                                View Synopsis
+                            </button>
+                        </p>
+                    
+                        <div id="collapse${e.mal_id}" class="collapse hide" aria-labelledby="headingOne" >
+                            <h5>Synopsis</h5>
+                            <button>Translate</button>
+                            <div class="card-body" id="detailAnime">
+                                ${e.synopsis}
+                            </div>
+                        </div>
+                    </div>
+                    `)
+                    e.genres.forEach(function(el){
+                        $(`#animeGenre${e.mal_id}`).append(`<span class="badge badge-pill badge-primary">${el.name}</span>`)
+                    })
+                });
+            })
+            .fail( error => {
+
+            })
+    </script>
 </body>
 
 </html>
