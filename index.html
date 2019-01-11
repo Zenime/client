@@ -5,30 +5,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="google-signin-client_id" content="167652298089-v9b8qmnbl2biqutjm6lgq10f3s1hcd3b.apps.googleusercontent.com">
+    <meta name="google-signin-client_id" content="828992207061-gs9c21tstsirf52de5io3i6bopr6ijls.apps.googleusercontent.com">
     <link rel="stylesheet" href="https://bootswatch.com/4/litera/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
         crossorigin="anonymous">
     <link rel="stylesheet" href="./src/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+    crossorigin="anonymous">
+    
+    <link rel="icon"
+     type="image/png"
+     href="https://dewey.tailorbrands.com/production/brand_version_mockup_image/242/1573095242_493e7505-7c8f-4830-826e-46177c6be43d.png?cb=1547193567">
     <title>Zenime</title>
 </head>
 
 <body>
     <div class="container">
         <div id="header">
-                <a href="/" id="logo">Zenime</a>
-                <ul id="menu">
-            
-                <li><a><span><div class="g-signin2" data-onsuccess="onSignIn" style="height: 50px; width: 160px; margin-bottom: 3px; margin-right: 300px;"></div> </span></a></li>
-    
-                </div>
-            
-                </ul>
+            <!-- <a href="/" id="logo">Zenime</a> -->
+            <img src="src/background.png" alt="logoZenime" class="center">
+            <ul id="menu">
+                <li><a><span style="margin-bottom: 100px;">
+                    <div class="g-signin2" data-onsuccess="onSignIn" style="height: 50px; width: 160px; margin-bottom: 3px; margin-right: 300px;"></div>
+                </span></a></li>
+            </ul>
         </div>
     </div>
     <div id="home">
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <a class="navbar-brand" href="#">
+                <!-- <img src="https://dewey.tailorbrands.com/production/brand_version_mockup_image/712/1573103712_4bd0cd24-deab-46b5-9e97-ab69c8000ccd.png?cb=1547193889" alt=""> -->
                 <h1>Zenime</h1> <span class="sr-only">(current)</span>
             </a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
@@ -39,11 +45,13 @@
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Home</a>
-                        <a class="btn" id="clickLogout">Logout</a>
+                        <a class="nav-link" href="#"><i class="fa fa-fw fa-home"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="clickLogout"><i class="fas fa-sign-out-alt"></i>Logout</a>
                     </li>
                 </ul>
-                <form class="form-inline my-2 my-lg-0" id="searchSeason">
+                <form class="form-inline my-2 my-lg-0" id="searchSeason" style="margin-right: 10px">
                     <input id="searchYear" class="form-control mr-sm-2" type="text" placeholder="Year">
                     <div class="form-group">
                         <select class="custom-select" id="optionSeason">
@@ -56,6 +64,13 @@
                     </div>
                     <button class="btn btn-secondary my-2 my-sm-0">Search</button>
                 </form>
+                <div class="form-group" style="margin-top: 17px;">
+                    <select class="custom-select" id="optionSort" onchange="sort()" >
+                        <option selected="">Sort by Rating</option>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
             </div>
         </nav>
         <!-- id: 
@@ -82,13 +97,42 @@
 
     <script>
         const token = localStorage.getItem('token')
+        checkLogin()
+        var listAnime = []
+
+        function checkLogin() {
+            if (token) {
+                $('#header').hide()
+                $('#home').show()
+            } else {
+                $('#header').show()
+                $('#home').hide()
+            }
+        }
+
+        function sort() {
+            let input = $('#optionSort').val()
+            console.log(input)
+            if (input === 'desc') {
+                console.log('desc')
+                listAnime.sort(function (a, b) {
+                    return b.score - a.score;
+                });
+            } else {
+                console.log('asc')
+                listAnime.sort(function (a, b) {
+                    return a.score - b.score;
+                });
+            }
+            getList(listAnime)
+        }
 
         function getList(list) {
             $('#animeList').empty()
-            list.forEach( function(e){
-                    // console.log(e)
-                    let fixText  = e.synopsis.replace(/[^a-zA-Z ]/g, "")
-                    $('#animeList').append(`
+            list.forEach(function (e) {
+                // console.log(e)
+                let fixText = e.synopsis.replace(/[^a-zA-Z ]/g, "")
+                $('#animeList').append(`
                     <div class="mx-auto jumbotron pb-2 pt-2" style="width: 85%;">
                         <img id="animeImage" class="rounded float-left img-thumbnail mx-3" style="width: 90px; height:125px" src="${e.image_url}">
                         <h4 class="" id="animeTitle">${e.title}</h4>
@@ -138,44 +182,46 @@
                         </div>
                     </div>
                     `)
-                    e.genres.forEach(function (el) {
-                        $(`#animeGenre${e.mal_id}`).append(`<span class="badge badge-pill badge-primary">${el.name}</span>`)
-                    })
-                });
+                e.genres.forEach(function (el) {
+                    $(`#animeGenre${e.mal_id}`).append(`<span class="badge badge-pill badge-primary">${el.name}</span>`)
+                })
+            });
         }
+
         $.ajax({
             type: "GET",
             url: `http://localhost:3000/anime`
         })
-            .done( animes => {
+            .done(animes => {
+                listAnime = animes
                 getList(animes)
             })
             .fail(error => {
 
             })
 
-        
+
         function getSong(title, id) {
             $.ajax({
                 type: 'get',
                 url: `http://localhost:3000/music?q=${title}`
             })
-            .done (data => {
-                let songInfo = data.list[0]
-                let songList = data.list
+                .done(data => {
+                    let songInfo = data.list[0]
+                    let songList = data.list
 
-                $(`#songTitle${id}`).empty()
-                songList.forEach(song => {
-                    $(`#songTitle${id}`).append(
-                        `
+                    $(`#songTitle${id}`).empty()
+                    songList.forEach(song => {
+                        $(`#songTitle${id}`).append(
+                            `
                         <a onclick="playSong('${song.preview}' , '${song.title}', '${id}')" class="dropdown-item" href="#">${song.title}</a>
                         `
-                    )
+                        )
+                    })
                 })
-            })
-            .fail(err => {
-                console.log(err)
-            })
+                .fail(err => {
+                    console.log(err)
+                })
         }
 
         function playSong(src, title, id) {
@@ -188,9 +234,9 @@
 
                 `
             )
-        } 
-        
-        function readSynopsys (text) {
+        }
+
+        function readSynopsys(text) {
             $.ajax({
                 type: 'get',
                 url: `http://localhost:3000/speech`,
@@ -198,44 +244,44 @@
                     text
                 }
             })
-            .done(data => {
-                let audio = new Audio(data.data)
-                audio.play()
-            })
-            .fail(err => {
-                console.error(err)
-            })
+                .done(data => {
+                    let audio = new Audio(data.data)
+                    audio.play()
+                })
+                .fail(err => {
+                    console.error(err)
+                })
 
         }
         //Get languages
-        function getLangs (id) {
+        function getLangs(id) {
             $.ajax({
                 method: `GET`,
                 url: `http://localhost:3000/translate`
             })
-            .done(langs => {
-               let languages = langs.languages
-               let lists = ''
-               languages.forEach(val => {
-                   lists += `<option value="${val.language}">${val.language.toUpperCase()} - ${val.name}</option>`
-               })
-               $(`.listLang${id}`).html(lists)
-            })
-            .fail(err => {
-                console.log(err)
-            })
+                .done(langs => {
+                    let languages = langs.languages
+                    let lists = ''
+                    languages.forEach(val => {
+                        lists += `<option value="${val.language}">${val.language.toUpperCase()} - ${val.name}</option>`
+                    })
+                    $(`.listLang${id}`).html(lists)
+                })
+                .fail(err => {
+                    console.log(err)
+                })
         }
         //translate
-        function translateText (text, id) {
+        function translateText(text, id) {
             $('.triggerTrans').click(e => {
                 e.preventDefault()
-                    const lang = $(`.listLang${id}`).val().slice(0,2)
-                    console.log(lang)
-                    const texts = $(`#detailAnime${id}`).text().split(' ')
-                    let filter = texts.filter((val, index) => {
+                const lang = $(`.listLang${id}`).val().slice(0, 2)
+                console.log(lang)
+                const texts = $(`#detailAnime${id}`).text().split(' ')
+                let filter = texts.filter((val, index) => {
                     return val !== '' && val !== '\n'
-                    })
-                    let fixText = filter.join(' ')
+                })
+                let fixText = filter.join(' ')
                 $.ajax({
                     method: `POST`,
                     url: `http://localhost:3000/translate`,
@@ -251,9 +297,9 @@
                     .fail(err => {
                         console.log(err)
                     })
-                }) 
+            })
         }
-       
+
         function getDetails(mal_id) {
             console.log(mal_id)
             getLangs(mal_id)
@@ -284,6 +330,7 @@
                 url: `http://localhost:3000/anime/${year}/${season}`,
             })
                 .done(animes => {
+                    listAnime = animes
                     getList(animes)
                 })
                 .fail(error => {
@@ -293,28 +340,29 @@
         function onSignIn(googleUser) {
             var profile = googleUser.getBasicProfile();
             var id_token = googleUser.getAuthResponse().id_token
+            console.log(id_token)
             $.ajax({
-                url:`http://localhost:3000/users`,
+                url: `http://localhost:3000/users`,
                 method: `POST`,
                 data: {
                     gToken: id_token
                 }
             })
-            .done(token => {
-                localStorage.setItem('token', token.token)
-                $('#home').show()
-                $('.g-signin2').hide()
-                $('#clickLogout').show()
-                $('#header').hide()
-            })
-            .fail(err => {
-                console.log(err)
-            })
-}
-    $('#clickLogout').click((event) => {
-                event.preventDefault()
-                var auth2 = gapi.auth2.getAuthInstance();
-                auth2.signOut().then(function () {
+                .done(token => {
+                    localStorage.setItem('token', token.token)
+                    $('#home').show()
+                    $('.g-signin2').hide()
+                    $('#clickLogout').show()
+                    $('#header').hide()
+                })
+                .fail(err => {
+                    console.log(err)
+                })
+        }
+        $('#clickLogout').click((event) => {
+            event.preventDefault()
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
                 console.log('User signed out.');
                 localStorage.clear()
             });
@@ -325,9 +373,9 @@
                 $('#header').show()
                 $('#home').hide()
             })
-            })
-</script>
-<script src="https://apis.google.com/js/platform.js" async defer></script>
+        })
+    </script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
 </body>
 
 
