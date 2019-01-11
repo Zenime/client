@@ -6,58 +6,89 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://bootswatch.com/4/litera/bootstrap.min.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+        crossorigin="anonymous">
     <title>Zenime</title>
 </head>
 
 <body>
-    <div id="home" >
+    <div id="home">
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-            <a class="navbar-brand" href="#"> <h1>Zenime</h1> <span class="sr-only">(current)</span></a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01" aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
-              <span class="navbar-toggler-icon"></span>
+            <a class="navbar-brand" href="#">
+                <h1>Zenime</h1> <span class="sr-only">(current)</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+                aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
             </button>
-          
+
             <div class="collapse navbar-collapse" id="navbarColor01">
-              <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                </li>
-              </ul>
-              <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="text" placeholder="Search">
-                <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-              </form>
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Home</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0" id="searchSeason">
+                    <input id="searchYear" class="form-control mr-sm-2" type="text" placeholder="Year">
+                    <div class="form-group">
+                        <select class="custom-select" id="optionSeason">
+                            <option selected="">Season</option>
+                            <option value="winter">Winter</option>
+                            <option value="spring">Spring</option>
+                            <option value="summer">Summer</option>
+                            <option value="fall">Fall</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary my-2 my-sm-0">Search</button>
+                </form>
             </div>
         </nav>
+        <!-- id: 
+    animeImage,
+    animeTitle,
+    detailAnime,
+    animeGenre,
+
+ -->
         <br>
 
         <div id="animeList"></div>
+
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"></script>
 
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
-    
+
     <script>
 
         $.ajax({
             type: "GET",
             url: `http://localhost:3000/anime`
         })
-            .done( animes => {
-                animes.forEach( function(e){
-                    console.log(e)
+            .done(animes => {
+                animes.forEach(function (e) {
+                    // console.log(e)
                     $('#animeList').append(`
                     <div class="mx-auto jumbotron pb-2 pt-2" style="width: 85%;">
                         <img id="animeImage" class="rounded float-left img-thumbnail mx-3" style="width: 90px; height:125px" src="${e.image_url}">
                         <h4 class="" id="animeTitle">${e.title}</h4>
+                        <h5 class="float-right">
+                            Score: ${e.score}
+                        </h5>
                         <p class="lead" id="animeGenre${e.mal_id}">
                             <span class="badge badge-pill badge-success">Genre</span>
                         </p>
+                        <p>Episode: ${e.episodes}</p
+                        <p>Source: ${e.source}</p
+                        
                         <p class="lead">
-                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${e.mal_id}" >
+                            <button class="btn btn-link" onclick="getDetails('${e.mal_id}')" type="button" data-toggle="collapse" data-target="#collapse${e.mal_id}" >
                                 View Synopsis
                             </button>
                         </p>
@@ -84,15 +115,16 @@
                             <div class="card-body" id="detailAnime">
                                 ${e.synopsis}
                             </div>
+                            <div id="video${e.mal_id}"></div>
                         </div>
                     </div>
                     `)
-                    e.genres.forEach(function(el){
+                    e.genres.forEach(function (el) {
                         $(`#animeGenre${e.mal_id}`).append(`<span class="badge badge-pill badge-primary">${el.name}</span>`)
                     })
                 });
             })
-            .fail( error => {
+            .fail(error => {
 
             })
 
@@ -150,6 +182,71 @@
 
         }
        
+        function getDetails(mal_id) {
+            console.log(mal_id)
+            $.ajax({
+                type: "GET",
+                url: `http://localhost:3000/anime/${mal_id}`,
+            })
+                .done(details => {
+                    $(`#video${mal_id}`).empty()
+                    $(`#video${mal_id}`).append(`
+                    <iframe width="85%" height="600"
+                        src="${details.trailer_url}">
+                    </iframe>
+                `)
+                })
+                .fail(error => {
+                    console.log(error)
+                })
+        }
+
+        $('#searchSeason').on('submit', function (e) {
+            e.preventDefault()
+            let year = $('#searchYear').val()
+            let season = $('#optionSeason').val()
+            console.log(season, year)
+            $.ajax({
+                type: "GET",
+                url: `http://localhost:3000/anime/${year}/${season}`,
+            })
+                .done(animes => {
+                    $('#animeList').empty()
+                    animes.forEach(function (e) {
+                        $('#animeList').append(`
+                        <div class="mx-auto jumbotron pb-2 pt-2" style="width: 85%;">
+                            <img id="animeImage" class="rounded float-left img-thumbnail mx-3" style="width: 90px; height:125px" src="${e.image_url}">
+                            <h4 class="" id="animeTitle">${e.title}</h4>
+                            <p class="lead" id="animeGenre${e.mal_id}">
+                                <span class="badge badge-pill badge-success">Genre</span>
+                            </p>
+                            <p class="lead">
+                                <button class="btn btn-link" onclick="getDetails('${e.mal_id}')" type="button" data-toggle="collapse" data-target="#collapse${e.mal_id}" >
+                                    View Synopsis
+                                </button>
+                            </p>
+                        
+                            <div id="collapse${e.mal_id}" class="collapse hide" aria-labelledby="headingOne" >
+                                <h5>Synopsis</h5>
+                                <button>Translate</button>
+                                <button onclick="getSong('${e.mal_id}','${e.title}')">List Song</button>
+                                <div class="card-body" id="detailAnime">
+                                    ${e.synopsis}
+                                </div>
+                                <div id="video${e.mal_id}"></div>
+                            </div>
+                        </div>
+                        `)
+                        e.genres.forEach(function (el) {
+                            $(`#animeGenre${e.mal_id}`).append(`<span class="badge badge-pill badge-primary">${el.name}</span>`)
+                        })
+                    });
+                })
+                .fail(error => {
+                    console.log(error)
+                })
+
+        })
 
     </script>
 </body>
