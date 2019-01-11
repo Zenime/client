@@ -21,7 +21,6 @@
             <div class="collapse navbar-collapse" id="navbarColor01">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                  <a class="nav-link" href="#">About</a>
                 </li>
               </ul>
               <form class="form-inline my-2 my-lg-0">
@@ -30,25 +29,15 @@
               </form>
             </div>
         </nav>
-<!-- id: 
-    animeImage,
-    animeTitle,
-    detailAnime,
-    animeGenre,
-
- -->
         <br>
 
-        <div id="animeList">
-            
-        </div>
-
+        <div id="animeList"></div>
     </div>
+
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
     
     <script>
@@ -74,12 +63,24 @@
                         </p>
                     
                         <div id="collapse${e.mal_id}" class="collapse hide" aria-labelledby="headingOne" >
-                            <div id="song" onclick="getSong('${e.title}')" ><button>Soundtrack</button></div>
-                            <h5>Synopsis</h5>
-                            <button>Translate</button>
-                            <button onclick="readSynopsys('hahahaha')">
+                         
+                            <div id="songDropdown">
+                                <div class=" btn-group float-left " role="group" >
+                                    <button class="nav-link dropdown-toggle btn btn-link" onclick="getSong('${e.title}', '${e.mal_id}')" data-toggle="dropdown" href="#" type="button" aria-haspopup="true" aria-expanded="false">Songs</button>
+                                    <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                                        <div id="songTitle${e.mal_id}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-link ">Translate</button>
+                            <button class="btn btn-link " onclick="readSynopsys('hahahaha')">
                                 read
                             </button>
+                            <div id="song${e.mal_id}" class="rounded float-right"  ></div>
+
+                            <h5 style="text-align: left; margin-top: 10px; margin-left: 15px">Synopsis</h5>
                             <div class="card-body" id="detailAnime">
                                 ${e.synopsis}
                             </div>
@@ -95,27 +96,41 @@
 
             })
 
-        function getSong(title) {
+        
+        function getSong(title, id) {
             $.ajax({
                 type: 'get',
                 url: `http://localhost:3000/music?q=${title}`
             })
             .done (data => {
                 let songInfo = data.list[0]
-                $('#song').empty()
-                $('#song').append(
-                    `
-                    <audio controls src="${songInfo.preview}">
-                        <a href="${songInfo.preview}"> ${songInfo.title} </a>
-                    </audio>
+                let songList = data.list
 
-                    `
-                )
+                $(`#songTitle${id}`).empty()
+                songList.forEach(song => {
+                    $(`#songTitle${id}`).append(
+                        `
+                        <a onclick="playSong('${song.preview}' , '${song.title}', '${id}')" class="dropdown-item" href="#">${song.title}</a>
+                        `
+                    )
+                })
             })
             .fail(err => {
-
+                console.log(err)
             })
         }
+
+        function playSong(src, title, id) {
+            $(`#song${id}`).empty()
+            $(`#song${id}`).append(
+                `
+                <audio controls src="${src}">
+                    <a href="${src}"> ${title} </a>
+                </audio>
+
+                `
+            )
+        } 
         
         function readSynopsys (text) {
             $.ajax({
