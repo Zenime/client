@@ -44,7 +44,7 @@
         </div>
 
     </div>
-    
+
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
@@ -52,6 +52,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
     
     <script>
+
         $.ajax({
             type: "GET",
             url: `http://localhost:3000/anime`
@@ -73,8 +74,12 @@
                         </p>
                     
                         <div id="collapse${e.mal_id}" class="collapse hide" aria-labelledby="headingOne" >
+                            <div id="song" onclick="getSong('${e.title}')" ><button>Soundtrack</button></div>
                             <h5>Synopsis</h5>
                             <button>Translate</button>
+                            <button onclick="readSynopsys('hahahaha')">
+                                read
+                            </button>
                             <div class="card-body" id="detailAnime">
                                 ${e.synopsis}
                             </div>
@@ -89,6 +94,48 @@
             .fail( error => {
 
             })
+
+        function getSong(title) {
+            $.ajax({
+                type: 'get',
+                url: `http://localhost:3000/music?q=${title}`
+            })
+            .done (data => {
+                let songInfo = data.list[0]
+                $('#song').empty()
+                $('#song').append(
+                    `
+                    <audio controls src="${songInfo.preview}">
+                        <a href="${songInfo.preview}"> ${songInfo.title} </a>
+                    </audio>
+
+                    `
+                )
+            })
+            .fail(err => {
+
+            })
+        }
+        
+        function readSynopsys (text) {
+            $.ajax({
+                type: 'get',
+                url: `http://localhost:3000/speech`,
+                headers: {
+                    text
+                }
+            })
+            .done(data => {
+                let audio = new Audio(data.data)
+                audio.play()
+            })
+            .fail(err => {
+                console.error(err)
+            })
+
+        }
+       
+
     </script>
 </body>
 
