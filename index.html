@@ -5,13 +5,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="google-signin-client_id" content="167652298089-v9b8qmnbl2biqutjm6lgq10f3s1hcd3b.apps.googleusercontent.com">
     <link rel="stylesheet" href="https://bootswatch.com/4/litera/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
         crossorigin="anonymous">
+    <link rel="stylesheet" href="./src/style.css">
     <title>Zenime</title>
 </head>
 
 <body>
+    <div class="container">
+        <div id="header">
+                <a href="/" id="logo">Zenime</a>
+                <ul id="menu">
+            
+                <li><a><span><div class="g-signin2" data-onsuccess="onSignIn" style="height: 50px; width: 160px; margin-bottom: 3px; margin-right: 300px;"></div> </span></a></li>
+    
+                </div>
+            
+                </ul>
+        </div>
+    </div>
     <div id="home">
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
             <a class="navbar-brand" href="#">
@@ -26,6 +40,7 @@
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
                         <a class="nav-link" href="#">Home</a>
+                        <a class="btn" id="clickLogout">Logout</a>
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-lg-0" id="searchSeason">
@@ -66,6 +81,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
 
     <script>
+        const token = localStorage.getItem('token')
 
         function getList(list) {
             $('#animeList').empty()
@@ -111,8 +127,8 @@
                                 <button class="btn btn-link " onclick="readSynopsys('${e.synopsis.replace(/[^a-zA-Z ]/g, "")}')">
                                     read
                                 </button>
+                                <div id="song${e.mal_id}" class="rounded float-right"></div>
                             </div>
-                            <div id="song${e.mal_id}" class="rounded float-right"></div>
 
                             <h5 style="text-align: left; margin-top: 10px; margin-left: 15px">Synopsis</h5>
                             <div class="card-body" id="detailAnime${e.mal_id}">
@@ -273,10 +289,47 @@
                 .fail(error => {
                     console.log(error)
                 })
-
         })
-
-    </script>
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            var id_token = googleUser.getAuthResponse().id_token
+            $.ajax({
+                url:`http://localhost:3000/users`,
+                method: `POST`,
+                data: {
+                    gToken: id_token
+                }
+            })
+            .done(token => {
+                localStorage.setItem('token', token.token)
+                $('#home').show()
+                $('.g-signin2').hide()
+                $('#clickLogout').show()
+                $('#header').hide()
+            })
+            .fail(err => {
+                console.log(err)
+            })
+}
+    $('#clickLogout').click((event) => {
+                event.preventDefault()
+                var auth2 = gapi.auth2.getAuthInstance();
+                auth2.signOut().then(function () {
+                console.log('User signed out.');
+                localStorage.clear()
+            });
+            $(document).ready(function () {
+                $('.g-signin2').show()
+                $('#clickLogout').hide()
+                $('#menu').show()
+                $('#header').show()
+                $('#home').hide()
+            })
+            })
+</script>
+<script src="https://apis.google.com/js/platform.js" async defer></script>
 </body>
+
+
 
 </html>
