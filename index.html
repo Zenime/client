@@ -106,10 +106,10 @@
                             </div>
 
                             <button class="btn btn-link ">Translate</button>
-                            <button class="btn btn-link " onclick="readSynopsys('hahahaha')">
+                            <button class="btn btn-link " onclick="readSynopsys('${e.synopsis.replace(/[^a-zA-Z ]/g, "")}')">
                                 read
                             </button>
-                            <div id="song${e.mal_id}" class="rounded float-right"  ></div>
+                            <div id="song${e.mal_id}" class="rounded float-right"></div>
 
                             <h5 style="text-align: left; margin-top: 10px; margin-left: 15px">Synopsis</h5>
                             <div class="card-body" id="detailAnime">
