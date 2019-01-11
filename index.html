@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="google-signin-client_id" content="167652298089-v9b8qmnbl2biqutjm6lgq10f3s1hcd3b.apps.googleusercontent.com">
+    <link rel="stylesheet" href="https://bootswatch.com/4/litera/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
+        crossorigin="anonymous">
+    <link rel="stylesheet" href="./src/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/"
+    crossorigin="anonymous">
+    
+    <link rel="icon"
+     type="image/png"
+     href="https://dewey.tailorbrands.com/production/brand_version_mockup_image/242/1573095242_493e7505-7c8f-4830-826e-46177c6be43d.png?cb=1547193567">
+    <title>Zenime</title>
+</head>
+
+<body>
+    <div class="container">
+        <div id="header">
+            <img src="src/background.png" alt="logoZenime" class="center">
+            <ul id="menu">
+                <li><a><span style="margin-bottom: 100px;">
+                    <div class="g-signin2" data-onsuccess="onSignIn" style="height: 50px; width: 160px; margin-bottom: 3px; margin-right: 300px;"></div>
+                </span></a></li>
+            </ul>
+        </div>
+    </div>
+    <div id="home">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+            <a class="navbar-brand" href="#">
+                <!-- <img src="https://dewey.tailorbrands.com/production/brand_version_mockup_image/712/1573103712_4bd0cd24-deab-46b5-9e97-ab69c8000ccd.png?cb=1547193889" alt=""> -->
+                <h1>Zenime</h1> <span class="sr-only">(current)</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor01"
+                aria-controls="navbarColor01" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarColor01">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item" onclick="getAnime()">
+                        <a class="nav-link"><i class="fa fa-fw fa-home"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="clickLogout"><i class="fas fa-sign-out-alt"></i>Logout</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0" id="searchSeason" style="margin-right: 10px">
+                    <input id="searchYear" class="form-control mr-sm-2" type="text" placeholder="Year">
+                    <div class="form-group">
+                        <select class="custom-select" id="optionSeason">
+                            <option selected="">Season</option>
+                            <option value="winter">Winter</option>
+                            <option value="spring">Spring</option>
+                            <option value="summer">Summer</option>
+                            <option value="fall">Fall</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary my-2 my-sm-0">Search</button>
+                </form>
+                <div class="form-group" style="margin-top: 17px;">
+                    <select class="custom-select" id="optionSort" onchange="sort()" >
+                        <option selected="">Sort by Rating</option>
+                        <option value="asc">Ascending</option>
+                        <option value="desc">Descending</option>
+                    </select>
+                </div>
+            </div>
+        </nav>
+        <!-- id: 
+    animeImage,
+    animeTitle,
+    detailAnime,
+    animeGenre,
+
+ -->
+        <br>
+
+        <div id="animeList"></div>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.js"></script>
+
+    <script>
+        const token = localStorage.getItem('token')
+        checkLogin()
+        var listAnime = []
+
+        function checkLogin() {
+            if (token) {
+                getAnime()
+                $('#header').hide()
+                $('#home').show()
+            } else {
+                $('#header').show()
+                $('#home').hide()
+            }
+        }
+
+        function sort() {
+            let input = $('#optionSort').val()
+            console.log(input)
+            if (input === 'desc') {
+                console.log('desc')
+                listAnime.sort(function (a, b) {
+                    return b.score - a.score;
+                });
+            } else {
+                console.log('asc')
+                listAnime.sort(function (a, b) {
+                    return a.score - b.score;
+                });
+            }
+            getList(listAnime)
+        }
+
+        function getList(list) {
+            $('#animeList').empty()
+            list.forEach(function (e) {
+                // console.log(e)
+                let fixText = e.synopsis.replace(/[^a-zA-Z ]/g, "")
+                $('#animeList').append(`
+                    <div class="mx-auto jumbotron pb-2 pt-2" style="width: 85%;">
+                        <img id="animeImage" class="rounded float-left img-thumbnail mx-3" style="width: 90px; height:125px" src="${e.image_url}">
+                        <h4 class="" id="animeTitle">${e.title}</h4>
+                        <h5 class="float-right">
+                            Score: ${e.score}
+                        </h5>
+                        <p class="lead" id="animeGenre${e.mal_id}">
+                            <span class="badge badge-pill badge-success">Genre</span>
+                        </p>
+                        <p>Episode: ${e.episodes}</p
+                        <p>Source: ${e.source}</p
+                        
+                        <p class="lead">
+                            <button class="btn btn-link" onclick="getDetails('${e.mal_id}')" type="button" data-toggle="collapse" data-target="#collapse${e.mal_id}" >
+                                View Synopsis
+                            </button>
+                        </p>
+                    
+                        <div id="collapse${e.mal_id}" class="collapse hide" aria-labelledby="headingOne" >
+                            <div class="input-group">
+                                    <select class="listLang${e.mal_id}">
+                                    
+                                    </select>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary triggerTrans" type="button" onclick="translateText('${fixText}', '${e.mal_id}')">Translate</button>
+                            </div>
+                                    <div id="songDropdown">
+                                        <div class=" btn-group float-left " role="group" >
+                                        <button class="nav-link dropdown-toggle btn btn-link" onclick="getSong('${e.title}', '${e.mal_id}')" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false">Songs</button>
+                                        <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
+                                        <div id="songTitle${e.mal_id}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                                <button class="btn btn-link " onclick="readSynopsys('${e.synopsis.replace(/[^a-zA-Z ]/g, "")}')">
+                                    read
+                                </button>
+                                <div id="song${e.mal_id}" class="rounded float-right"></div>
+                            </div>
+
+                            <h5 style="text-align: left; margin-top: 10px; margin-left: 15px">Synopsis</h5>
+                            <div class="card-body" id="detailAnime${e.mal_id}">
+                                ${fixText}
+                            </div>
+                            <div id="video${e.mal_id}"></div>
+                        </div>
+                    </div>
+                    `)
+                e.genres.forEach(function (el) {
+                    $(`#animeGenre${e.mal_id}`).append(`<span class="badge badge-pill badge-primary">${el.name}</span>`)
+                })
+            });
+        }
+        function getAnime() {
+            $.ajax({
+                type: "GET",
+                url: `http://localhost:3000/anime`
+            })
+                .done(animes => {
+                    listAnime = animes
+                    getList(animes)
+                })
+                .fail(error => {
+    
+                })
+        }
+
+        function getSong(title, id) {
+            $.ajax({
+                type: 'get',
+                url: `http://localhost:3000/music?q=${title}`
+            })
+                .done(data => {
+                    let songInfo = data.list[0]
+                    let songList = data.list
+
+                    $(`#songTitle${id}`).empty()
+                    songList.forEach(song => {
+                        $(`#songTitle${id}`).append(
+                            `
+                        <a onclick="playSong('${song.preview}' , '${song.title}', '${id}')" class="dropdown-item">${song.title}</a>
+                        `
+                        )
+                    })
+                })
+                .fail(err => {
+                    console.log(err)
+                })
+        }
+
+        function playSong(src, title, id) {
+
+            $(`#song${id}`).empty()
+            $(`#song${id}`).append(
+                `
+                <audio controls src="${src}">
+                    <a href="${src}"> ${title} </a>
+                </audio>
+
+                `
+            )
+        }
+
+        function readSynopsys(text) {
+            $.ajax({
+                type: 'get',
+                url: `http://localhost:3000/speech`,
+                headers: {
+                    text
+                }
+            })
+                .done(data => {
+                    let audio = new Audio(data.data)
+                    audio.play()
+                })
+                .fail(err => {
+                    console.error(err)
+                })
+
+        }
+        //Get languages
+        function getLangs(id) {
+            $.ajax({
+                method: `GET`,
+                url: `http://localhost:3000/translate`
+            })
+                .done(langs => {
+                    let languages = langs.languages
+                    let lists = ''
+                    languages.forEach(val => {
+                        lists += `<option value="${val.language}">${val.language.toUpperCase()} - ${val.name}</option>`
+                    })
+                    $(`.listLang${id}`).html(lists)
+                })
+                .fail(err => {
+                    console.log(err)
+                })
+        }
+        //translate
+        function translateText(text, id) {
+            $('.triggerTrans').click(e => {
+                e.preventDefault()
+                const lang = $(`.listLang${id}`).val().slice(0, 2)
+                console.log(lang)
+                const texts = $(`#detailAnime${id}`).text().split(' ')
+                let filter = texts.filter((val, index) => {
+                    return val !== '' && val !== '\n'
+                })
+                let fixText = filter.join(' ')
+                $.ajax({
+                    method: `POST`,
+                    url: `http://localhost:3000/translate`,
+                    data: {
+                        text: fixText,
+                        target: lang
+                    }
+                })
+                    .done(result => {
+                        console.log(result)
+                        $(`#detailAnime${id}`).html(`${result}`)
+                    })
+                    .fail(err => {
+                        console.log(err)
+                    })
+            })
+        }
+
+        function getDetails(mal_id) {
+            console.log(mal_id)
+            getLangs(mal_id)
+            $.ajax({
+                type: "GET",
+                url: `http://localhost:3000/anime/${mal_id}`,
+            })
+                .done(details => {
+                    $(`#video${mal_id}`).empty()
+                    $(`#video${mal_id}`).append(`
+                    <iframe width="85%" height="600"
+                        src="${details.trailer_url}">
+                    </iframe>
+                `)
+                })
+                .fail(error => {
+                    console.log(error)
+                })
+        }
+
+        $('#searchSeason').on('submit', function (e) {
+            e.preventDefault()
+            let year = $('#searchYear').val()
+            let season = $('#optionSeason').val()
+            console.log(season, year)
+            $.ajax({
+                type: "GET",
+                url: `http://localhost:3000/anime/${year}/${season}`,
+            })
+                .done(animes => {
+                    listAnime = animes
+                    getList(animes)
+                })
+                .fail(error => {
+                    console.log(error)
+                })
+        })
+        function onSignIn(googleUser) {
+            var profile = googleUser.getBasicProfile();
+            var id_token = googleUser.getAuthResponse().id_token
+            console.log(id_token)
+            $.ajax({
+                url: `http://localhost:3000/users`,
+                method: `POST`,
+                data: {
+                    gToken: id_token
+                }
+            })
+                .done(token => {
+                    localStorage.setItem('token', token.token)
+                    $('#home').show()
+                    $('.g-signin2').hide()
+                    $('#clickLogout').show()
+                    $('#header').hide()
+                })
+                .fail(err => {
+                    console.log(err)
+                })
+        }
+        $('#clickLogout').click((event) => {
+            event.preventDefault()
+            var auth2 = gapi.auth2.getAuthInstance();
+            auth2.signOut().then(function () {
+                console.log('User signed out.');
+                localStorage.clear()
+            });
+            $(document).ready(function () {
+                $('.g-signin2').show()
+                $('#clickLogout').hide()
+                $('#menu').show()
+                $('#header').show()
+                $('#home').hide()
+            })
+        })
+    </script>
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+</body>
+
+
+
+</html>
