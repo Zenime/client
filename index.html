@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="google-signin-client_id" content="828992207061-gs9c21tstsirf52de5io3i6bopr6ijls.apps.googleusercontent.com">
+    <meta name="google-signin-client_id" content="167652298089-v9b8qmnbl2biqutjm6lgq10f3s1hcd3b.apps.googleusercontent.com">
     <link rel="stylesheet" href="https://bootswatch.com/4/litera/bootstrap.min.css">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
         crossorigin="anonymous">
@@ -43,8 +43,8 @@
 
             <div class="collapse navbar-collapse" id="navbarColor01">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#"><i class="fa fa-fw fa-home"></i>Home</a>
+                    <li class="nav-item" onclick="getAnime()">
+                        <a class="nav-link"><i class="fa fa-fw fa-home"></i>Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="clickLogout"><i class="fas fa-sign-out-alt"></i>Logout</a>
@@ -101,6 +101,7 @@
 
         function checkLogin() {
             if (token) {
+                getAnime()
                 $('#header').hide()
                 $('#home').show()
             } else {
@@ -160,7 +161,7 @@
                             </div>
                                     <div id="songDropdown">
                                         <div class=" btn-group float-left " role="group" >
-                                        <button class="nav-link dropdown-toggle btn btn-link" onclick="getSong('${e.title}', '${e.mal_id}')" data-toggle="dropdown" href="#" type="button" aria-haspopup="true" aria-expanded="false">Songs</button>
+                                        <button class="nav-link dropdown-toggle btn btn-link" onclick="getSong('${e.title}', '${e.mal_id}')" data-toggle="dropdown" type="button" aria-haspopup="true" aria-expanded="false">Songs</button>
                                         <div class="dropdown-menu" x-placement="bottom-start" style="position: absolute; will-change: transform; top: 0px; left: 0px; transform: translate3d(0px, 38px, 0px);">
                                         <div id="songTitle${e.mal_id}">
                                         </div>
@@ -186,19 +187,19 @@
                 })
             });
         }
-
-        $.ajax({
-            type: "GET",
-            url: `http://localhost:3000/anime`
-        })
-            .done(animes => {
-                listAnime = animes
-                getList(animes)
+        function getAnime() {
+            $.ajax({
+                type: "GET",
+                url: `http://localhost:3000/anime`
             })
-            .fail(error => {
-
-            })
-
+                .done(animes => {
+                    listAnime = animes
+                    getList(animes)
+                })
+                .fail(error => {
+    
+                })
+        }
 
         function getSong(title, id) {
             $.ajax({
@@ -213,7 +214,7 @@
                     songList.forEach(song => {
                         $(`#songTitle${id}`).append(
                             `
-                        <a onclick="playSong('${song.preview}' , '${song.title}', '${id}')" class="dropdown-item" href="#">${song.title}</a>
+                        <a onclick="playSong('${song.preview}' , '${song.title}', '${id}')" class="dropdown-item">${song.title}</a>
                         `
                         )
                     })
@@ -224,6 +225,7 @@
         }
 
         function playSong(src, title, id) {
+
             $(`#song${id}`).empty()
             $(`#song${id}`).append(
                 `
