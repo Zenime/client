@@ -71,9 +71,10 @@
             type: "GET",
             url: `http://localhost:3000/anime`
         })
-            .done(animes => {
-                animes.forEach(function (e) {
+            .done( animes => {
+                animes.forEach( function(e){
                     // console.log(e)
+                    let fixText  = e.synopsis.replace(/[^a-zA-Z ]/g, "")
                     $('#animeList').append(`
                     <div class="mx-auto jumbotron pb-2 pt-2" style="width: 85%;">
                         <img id="animeImage" class="rounded float-left img-thumbnail mx-3" style="width: 90px; height:125px" src="${e.image_url}">
@@ -89,12 +90,12 @@
                         
                         <p class="lead">
                             <button class="btn btn-link" onclick="getDetails('${e.mal_id}')" type="button" data-toggle="collapse" data-target="#collapse${e.mal_id}" >
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse${e.mal_id}" onclick="getLangs('${e.mal_id}')">
                                 View Synopsis
                             </button>
                         </p>
                     
                         <div id="collapse${e.mal_id}" class="collapse hide" aria-labelledby="headingOne" >
-                         
                             <div id="songDropdown">
                                 <div class=" btn-group float-left " role="group" >
                                     <button class="nav-link dropdown-toggle btn btn-link" onclick="getSong('${e.title}', '${e.mal_id}')" data-toggle="dropdown" href="#" type="button" aria-haspopup="true" aria-expanded="false">Songs</button>
@@ -105,15 +106,22 @@
                                 </div>
                             </div>
 
-                            <button class="btn btn-link ">Translate</button>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <button class="btn btn-outline-secondary triggerTrans" type="button" onclick="translateText('${fixText}', '${e.mal_id}')">Translate</button>
+                                </div>
+                                <select class="listLang${e.mal_id}">
+                                    
+                                </select>
+                            </div>
                             <button class="btn btn-link " onclick="readSynopsys('${e.synopsis.replace(/[^a-zA-Z ]/g, "")}')">
                                 read
                             </button>
                             <div id="song${e.mal_id}" class="rounded float-right"></div>
 
                             <h5 style="text-align: left; margin-top: 10px; margin-left: 15px">Synopsis</h5>
-                            <div class="card-body" id="detailAnime">
-                                ${e.synopsis}
+                            <div class="card-body" id="detailAnime${e.mal_id}">
+                                ${fixText}
                             </div>
                             <div id="video${e.mal_id}"></div>
                         </div>
@@ -180,6 +188,52 @@
                 console.error(err)
             })
 
+        }
+        //Get languages
+        function getLangs (id) {
+            $.ajax({
+                method: `GET`,
+                url: `http://localhost:3000/translate`
+            })
+            .done(langs => {
+               let languages = langs.languages
+               let lists = ''
+               languages.forEach(val => {
+                   lists += `<option value="${val.language}">${val.language.toUpperCase()} - ${val.name}</option>`
+               })
+               $(`.listLang${id}`).html(lists)
+            })
+            .fail(err => {
+                console.log(err)
+            })
+        }
+        //translate
+        function translateText (text, id) {
+            $('.triggerTrans').click(e => {
+                e.preventDefault()
+                    const lang = $(`.listLang${id}`).val().slice(0,2)
+                    console.log(lang)
+                    const texts = $(`#detailAnime${id}`).text().split(' ')
+                    let filter = texts.filter((val, index) => {
+                    return val !== '' && val !== '\n'
+                    })
+                    let fixText = filter.join(' ')
+                $.ajax({
+                    method: `POST`,
+                    url: `http://localhost:3000/translate`,
+                    data: {
+                        text: fixText,
+                        target: lang
+                    }
+                })
+                    .done(result => {
+                        console.log(result)
+                        $(`#detailAnime${id}`).html(`${result}`)
+                    })
+                    .fail(err => {
+                        console.log(err)
+                    })
+                }) 
         }
        
         function getDetails(mal_id) {
